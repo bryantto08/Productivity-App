@@ -1,7 +1,3 @@
-The content below is an example project proposal / requirements document. Replace the text below the lines marked "__TODO__" with details specific to your project. Remove the "TODO" lines.
-
-(__TODO__: your project name)
-
 # LifePremium
 
 ## Overview
@@ -19,7 +15,6 @@ The second tab will contain a note-taking feature that allows users to take note
 (__TODO__: a description of your application's data and their relationships to each other) 
 
 The application will store Users, Tasks, WeeklyLists, and Notes
-The application will store Users, Lists and Items
 
 * users can have multiple lists (via references)
 * each list can have multiple items (by embedding)
@@ -30,7 +25,7 @@ An Example User:
 
 ```javascript
 {
-  username: "shannonshopper",
+  username: "javascriptfannumber1",
   hash: // a password hash,
   weeklyLists: // an array of references to weeklyLists documents
 }
@@ -42,7 +37,7 @@ An Example weeklyList with Embedded Tasks:
 {
   user: // a reference to a User object
   tasks: [
-    { name: "exercise", duration: // timestamp, checked: false},
+    { name: "exercise", duration: "30:00", checked: false},
     { name: "AIT HW", partsCompleted: "4/4", checked: true},
   ],
   createdAt: // timestamp
@@ -53,14 +48,12 @@ An Example Note Document:
 ```javascript
 {
   user: // a reference to a User object
-  name: "AIT Notes"
-  text: "JavaScript is so weird! Firstly, it is a weakly typed language. Also, wat are prototypes??!?!
+  name: "AIT Notes",
+  text: "JavaScript is so weird! Firstly, it is a weakly typed language. Also, wat are prototypes??!?!"
 }
 ```
 
 ## [Link to Commented First Draft Schema](db.mjs) 
-
-(__TODO__: create a first draft of your Schemas in db.mjs and link to it)
 
 ## Wireframes
 
