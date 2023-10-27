@@ -56,7 +56,7 @@ An Example Note Document:
   name: "AIT Notes"
   text: "JavaScript is so weird! Firstly, it is a weakly typed language. Also, wat are prototypes??!?!
 }
-
+```
 
 ## [Link to Commented First Draft Schema](db.mjs) 
 
