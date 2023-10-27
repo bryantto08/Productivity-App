@@ -2,21 +2,23 @@ The content below is an example project proposal / requirements document. Replac
 
 (__TODO__: your project name)
 
-# Shoppy Shoperson 
+# LifePremium
 
 ## Overview
 
 (__TODO__: a brief one or two paragraph, high-level description of your project)
 
-Remembering what to buy at the grocery store is waaaaay too difficult. Also, shopping for groceries when you're hungry leads to regrettable purchases. Sooo... that's where Shoppy Shoperson comes in!
+Organizing your goals and tasks that you need to complete is an essential part of building a more productive and healthier life. LifePremium is a web application that allows you to keep track of any responsibility you need to do as well as containing a platform for effective note-taking. 
 
-Shoppy Shoperson is a web app that will allow users to keep track of multiple grocery lists. Users can register and login. Once they're logged in, they can create or view their grocery list. For every list that they have, they can add items to the list or cross off items.
+Users will have two different tabs, one as a To-Do List where users can set daily or weekly goals they want to achieve. These goals can be marked as complete or incomplete and analytics will be provided based on these specific goals.
 
+The second tab will contain a note-taking feature that allows users to take notes both effectively and efficiently through the help of supplementary AI tools.
 
 ## Data Model
 
 (__TODO__: a description of your application's data and their relationships to each other) 
 
+The application will store Users, Tasks, WeeklyLists, and Notes
 The application will store Users, Lists and Items
 
 * users can have multiple lists (via references)
@@ -30,23 +32,30 @@ An Example User:
 {
   username: "shannonshopper",
   hash: // a password hash,
-  lists: // an array of references to List documents
+  weeklyLists: // an array of references to weeklyLists documents
 }
 ```
 
-An Example List with Embedded Items:
+An Example weeklyList with Embedded Tasks:
 
 ```javascript
 {
   user: // a reference to a User object
-  name: "Breakfast foods",
-  items: [
-    { name: "pancakes", quantity: "9876", checked: false},
-    { name: "ramen", quantity: "2", checked: true},
+  tasks: [
+    { name: "exercise", duration: // timestamp, checked: false},
+    { name: "AIT HW", partsCompleted: "4/4", checked: true},
   ],
   createdAt: // timestamp
 }
 ```
+An Example Note Document:
+
+```javascript
+{
+  user: // a reference to a User object
+  name: "AIT Notes"
+  text: "JavaScript is so weird! Firstly, it is a weakly typed language. Also, wat are prototypes??!?!
+}
 
 
 ## [Link to Commented First Draft Schema](db.mjs) 
