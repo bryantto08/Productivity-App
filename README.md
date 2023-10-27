@@ -57,19 +57,21 @@ An Example Note Document:
 
 ## Wireframes
 
-(__TODO__: wireframes for all of the pages on your site; they can be as simple as photos of drawings or you can use a tool like Balsamiq, Omnigraffle, etc.)
+/weeklyList - page for showing and editing weeklyList and Tasks
 
-/list/create - page for creating a new shopping list
+![list](documentation/example-doc-to-do.png)
 
-![list create](documentation/list-create.png)
+/notes - page for showing notes of a user
 
-/list - page for showing all shopping lists
+![list](documentation/example-doc-notes.png)
 
-![list](documentation/list.png)
+/login - page for logging in
 
-/list/slug - page for showing specific shopping list
+![list](documentation/example-login.png)
 
-![list](documentation/list-slug.png)
+/sign-up - page for signing up
+
+![list](documentation/example-sign-up.png)
 
 ## Site map
 
