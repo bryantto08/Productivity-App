@@ -8,7 +8,8 @@ const mongoose = require('mongoose');
 const User = new mongoose.Schema({
   // username provided by authentication plugin
   // password hash provided by authentication plugin
-  weeklyLists:  [{ type: mongoose.Schema.Types.ObjectId, ref: 'weeklyList' }]
+  weeklyLists:  [{ type: mongoose.Schema.Types.ObjectId, ref: 'weeklyList' }],
+  notes:  [{ type: mongoose.Schema.Types.ObjectId, ref: 'Note' }]
 });
 
 // a task written inside of a weekly to-do list
