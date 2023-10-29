@@ -1,4 +1,4 @@
-# LifePremium
+# Life+
 
 ## Overview
 
