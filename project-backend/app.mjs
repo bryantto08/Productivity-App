@@ -17,7 +17,6 @@ const User = mongoose.model('User');
 const Note = mongoose.model('Note');
 var ObjectId = mongoose.Types.ObjectId;
 
-
 // Session Middleware for Authentication of an account, the only API endpoints we do not check for authentication is the login and register endpoint
 const checkUser = async (req, res, next) => {
     if (req.path === "/login" || req.path === "/register") {
@@ -26,7 +25,14 @@ const checkUser = async (req, res, next) => {
     else {
         const sessionId = req.get('session-id');
         const path = req.path.split('/');
-        const pattern = new RegExp(`^${path[path.length - 1]}$`, 'i');
+        console.log(path.length);
+        let pattern;
+        if (path.length === 4) {
+            pattern = new RegExp(`^${path[path.length - 2]}$`, 'i');
+        }
+        else {
+            pattern = new RegExp(`^${path[path.length - 1]}$`, 'i');
+        }
         const foundUser = await User.findOne({username: pattern});
         if (sessionId && sessionId == foundUser.sessionId) {
             next();
@@ -56,6 +62,23 @@ app.get("/notes/:username", async (req, res) => {
         catch(e) {
             console.log(e);
             res.json({error: e});
+        }
+    }
+});
+
+// GET API endpoint for Retrieving a specific Note from a User
+app.get("/notes/:username/:note", async (req, res) => {
+    const pattern = new RegExp(`^${req.params.username}$`, 'i');
+    const foundUser = await User.findOne({username: pattern});
+    if (foundUser) {
+        try{
+            const note = await Note.findById(req.params.note);
+            console.log(note);
+            res.json({success: 'true', data: note})
+        }
+        catch(e) {
+            console.log(e);
+            res.json({error: e})
         }
     }
 });
@@ -137,6 +160,7 @@ app.delete('/notes/:username', async (req, res) => {
     }
 });
 
+// API Endpoint for logging in
 app.post('/login', async(req, res) => {
     const pattern = new RegExp(`^${req.body.username}$`, 'i');
     const foundUser = await User.findOne({username: pattern});
@@ -156,6 +180,7 @@ app.post('/login', async(req, res) => {
     }
 });
 
+// API endpoint for registering an account
 app.post('/register', async (req, res) => {
     const pattern = new RegExp(`^${req.body.username}$`, 'i')
     const foundUser = await User.findOne({username: pattern})
