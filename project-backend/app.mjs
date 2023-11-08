@@ -4,39 +4,53 @@ import path from 'path'
 import mongoose from 'mongoose';
 import { fileURLToPath } from 'url';
 import './db.mjs'
+import session from 'express-session';
 
 const app = express();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
-import session from 'express-session'
 
-const sessionOptions = { 
-    secret: 'secret for signing session id', 
-    saveUninitialized: false, 
-    resave: false 
-}
-app.use(session(sessionOptions))
 // retrieve the constructor associated with User
 const User = mongoose.model('User');
 const Note = mongoose.model('Note');
 var ObjectId = mongoose.Types.ObjectId;
 
+
+// Session Middleware for Authentication of an account, the only API endpoints we do not check for authentication is the login and register endpoint
+const checkUser = async (req, res, next) => {
+    if (req.path === "/login" || req.path === "/register") {
+        next();
+    }
+    else {
+        const sessionId = req.get('session-id');
+        const path = req.path.split('/');
+        const pattern = new RegExp(`^${path[path.length - 1]}$`, 'i');
+        const foundUser = await User.findOne({username: pattern});
+        if (sessionId && sessionId == foundUser.sessionId) {
+            next();
+        }
+        else {
+            res.json({'error': 'Not Authenticated User'});
+        }
+    }
+
+}
+app.use(checkUser);
+
+// GET API endpoint for Retrieving a List of Notes by a User
 app.get("/notes/:username", async (req, res) => {
-    // CONFIRM USER IS AUTHENTICATED, session data
     const pattern = new RegExp(`^${req.params.username}$`, 'i');
     const foundUser = await User.findOne({username: pattern});
     if (foundUser) {
-        try{
+        try {
             console.log(foundUser.notes);
-            const notesList = await foundUser.notes.map(async (id) => {
-                console.log(id);
-                const halp = await Note.findById(new ObjectId(id));
-                console.log(halp);
-                return halp;
+            const promises = foundUser.notes.map(async (id) => {
+                const note = Note.findById(new ObjectId(id));
+                return note;
             })
-            console.log(notesList);
+            const notesList = await Promise.all(promises);
             res.json({notes: notesList});
         }
         catch(e) {
@@ -44,10 +58,13 @@ app.get("/notes/:username", async (req, res) => {
             res.json({error: e});
         }
     }
-})
+});
 
+// POST API endpoint for Adding a Note to the Database for a User
 app.post("/notes/:username", async (req, res) => {
     // CONFIRM USER IS AUTHENTICATED, session data
+
+    // Implementation for getting the notes of a user
     console.log(req.params.username);
     const pattern = new RegExp(`^${req.params.username}$`, 'i');
     const foundUser = await User.findOne({username: pattern});
@@ -72,13 +89,62 @@ app.post("/notes/:username", async (req, res) => {
     else {
         res.json({error: "no user found"});
     }
-})
+});
+
+// PATCH API Endpoint to Update a Note for a User
+app.patch('/notes/:username', async (req, res) => {
+    // CONFIRM USER IS AUTHENTICATED, session data
+    console.log('hello');
+    const pattern = new RegExp(`^${req.params.username}$`, 'i');
+    const foundUser = await User.findOne({username: pattern});
+    if (foundUser) {
+        try {
+            const note = await Note.findById(new ObjectId(req.body['note-id']));
+            note.text = req.body.text;
+            note.updatedAt = Date.now();
+            await note.save();
+            res.json({'success': 'true'});
+        }
+        catch(e) {
+            console.log(e);
+            res.json({'error': e});
+        }
+    }
+    else {
+        res.json({'error': 'user not found'});
+    }
+});
+
+// DELETE API endpoint to Delete a Note for a User
+app.delete('/notes/:username', async (req, res) => {
+    // CONFIRM USER IS AUTHENTICATED, session data
+    const pattern = new RegExp(`^${req.params.username}$`, 'i');
+    const foundUser = await User.findOne({username: pattern});
+    if (foundUser) {
+        const note = await Note.findById(new ObjectId(req.body["note-id"]));
+        if (note) {
+            const newUser = await User.findOneAndUpdate({username: foundUser.username}, {$pull: {notes: note.id}}, {new: true});
+            await Note.findByIdAndRemove(note.id);
+            console.log(newUser);
+            res.json({success: 'true'});
+        }
+        else {
+            res.json({'error': 'note not found in database'});
+        }
+    }
+    else {
+        res.json({'error': 'user not found'});
+    }
+});
 
 app.post('/login', async(req, res) => {
     const pattern = new RegExp(`^${req.body.username}$`, 'i');
     const foundUser = await User.findOne({username: pattern});
     if (foundUser) {
         if (await argon2.verify(foundUser.password, req.body.password)) {
+            console.log(foundUser);
+            console.log(foundUser.sessionId);
+            res.append(`Set-Cookie`, `session-id=${foundUser.sessionId}; HttpOnly`);
             res.json({success: 'true'});
         }
         else {
@@ -91,7 +157,6 @@ app.post('/login', async(req, res) => {
 });
 
 app.post('/register', async (req, res) => {
-    console.log(req.body);
     const pattern = new RegExp(`^${req.body.username}$`, 'i')
     const foundUser = await User.findOne({username: pattern})
     if (foundUser) {
@@ -104,6 +169,7 @@ app.post('/register', async (req, res) => {
                 password: await argon2.hash(req.body.password)
             })
             const savedUser = await user.save();
+            res.append(`Set-Cookie`, `session-id=${savedUser.sessionId}; HttpOnly`);
             res.json({success: 'true'});
             
         }

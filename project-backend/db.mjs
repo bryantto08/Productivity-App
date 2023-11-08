@@ -1,5 +1,6 @@
 import mongoose from 'mongoose'
 // on windows maybe: 127.0.0.1
+import crypto from 'crypto';
 mongoose.connect('mongodb://localhost/productivity-dev')
 
 // users
@@ -9,6 +10,7 @@ mongoose.connect('mongodb://localhost/productivity-dev')
 const UserSchema = new mongoose.Schema({
   username: {type: String, required: true, minLength: 4},
   password: {type: String, required: true, minLength: 8},
+  sessionId: {type: mongoose.Schema.Types.UUID, default: () => crypto.randomUUID()},
   weeklyLists:  [{ type: mongoose.Schema.Types.ObjectId, ref: 'weeklyList' }],
   notes:  [{ type: mongoose.Schema.Types.ObjectId, ref: 'Note' }]
 });
@@ -18,7 +20,7 @@ const UserSchema = new mongoose.Schema({
 // * items in a list can be crossed off
 const TaskSchema = new mongoose.Schema({
   name: {type: String, required: true},
-  duration: {type: Date, default: Date.now(), required: false},
+  duration: {type: Date, default: () => Date.now(), required: false},
   partsCompleted: {type: String, default: '0/4', required: false},
   checked: {type: Boolean, default: false, required: true}
 }, {
