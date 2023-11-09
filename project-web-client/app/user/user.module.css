@@ -1,0 +1,23 @@
+/* NotesList.module.css */
+
+.notesContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 30%; /* Adjust the width as needed */
+  }
+  
+  .noteBox {
+    background-color: #f0f0f0;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    cursor: pointer;
+    text-align: left;
+    width: 100%;
+  }
+  
+  .noteBox:hover {
+    background-color: #e0e0e0;
+  }
