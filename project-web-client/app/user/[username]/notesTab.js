@@ -11,21 +11,21 @@ import styles from '../user.module.css';
  * Then you can prob add the other apis here to with onClick functionality.
  * The first step though is to render the page first, and we do that by calling api in page.js and then sending the data here to INITIALIZE useState for notes
  */
-// export default function NoteTab({params}) {
-//     const [notes, setNotes] = useState(ListNotes(useParams()['username']));
-//     console.log(notes);
-//     return (
-//         <div>
-//             <h1>Welcome Back, {useParams()['username']}!</h1>
-//             <div className={styles.notesContainer}>
-//                 {
-//                 notes['notes'].map((note) => (
-//                 <div key={note.id} className={styles.noteBox}>
-//                     <p>{note.name}</p>
-//                     </div>
-//                 ))
-//                 }
-//             </div>
-//         </div>
-//     );
-// }
+export default function NoteTab({ data }) {
+    let [notes, setNotes] = useState(data['notes']);  // List of Notes
+    console.log(notes);
+    return (
+        <div>
+            <h1>Welcome Back, {useParams()['username']}!</h1>
+            <div className={styles.notesContainer}>
+                {
+                notes.map((note) => (
+                <div key={note.id} className={styles.noteBox}>
+                    <p>{note.name}</p>
+                    </div>
+                ))
+                }
+            </div>
+        </div>
+    );
+}
