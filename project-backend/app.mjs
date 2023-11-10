@@ -184,10 +184,8 @@ app.post('/login', async(req, res) => {
     const foundUser = await User.findOne({username: pattern});
     if (foundUser) {
         if (req.body.password && await argon2.verify(foundUser.password, req.body.password)) {
-            console.log(foundUser);
-            console.log(foundUser.sessionId);
             res.append(`Set-Cookie`, `session-id=${foundUser.sessionId}; HttpOnly`);
-            res.status(200).json({success: 'true'});
+            res.status(200).json({success: 'true', 'session-id': foundUser.sessionId});
         }
         else {
             res.status(400).json({error: 'Invalid Password'});
@@ -213,7 +211,7 @@ app.post('/register', async (req, res) => {
             })
             const savedUser = await user.save();
             res.append(`Set-Cookie`, `session-id=${savedUser.sessionId}; HttpOnly`);
-            res.status(200).json({success: 'true'});
+            res.status(200).json({success: 'true', 'session-id': savedUser.sessionId});
             
         }
         catch(e) {

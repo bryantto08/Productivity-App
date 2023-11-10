@@ -13,18 +13,17 @@ import NoteTab from './notesTab';
 
 export default async function Page({params}) {
   const cookieStore = cookies();
-  const isAuth = {success: true} //await sessionAuth({username: params.username, sessionId: cookieStore.get('session-id')});
+  const isAuth = await sessionAuth({username: params.username, sessionId: cookieStore.get('session-id')});
   let data = await ListNotes(params.username);
   data['username'] = params.username;
   return (
     <Fragment>
       { isAuth.success ? (
         <div>
-          <p>success</p>
           <NoteTab data={data}/>
         </div>
       ) : (
-        <p>fail</p>
+        <p>User not Authenticated</p>
       )
       }
     </Fragment>

@@ -19,6 +19,11 @@ export default function Navbar() {
             <p className={styles.navLink}>Log In</p>
           </Link>
         </li>
+        <li className={styles.navItem}>
+          <Link href="/register">
+            <p className={styles.navLink}>Register</p>
+          </Link>
+        </li>
       </ul>
     </nav>
   );
