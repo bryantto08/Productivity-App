@@ -1,7 +1,8 @@
 import mongoose from 'mongoose'
 // on windows maybe: 127.0.0.1
 import crypto from 'crypto';
-mongoose.connect('mongodb://localhost/productivity-dev')
+
+mongoose.connect('mongodb://localhost/productivity-dev');
 
 // users
 // * our site requires authentication...

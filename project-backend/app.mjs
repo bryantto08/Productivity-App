@@ -183,7 +183,7 @@ app.post('/login', async(req, res) => {
     const pattern = new RegExp(`^${req.body.username}$`, 'i');
     const foundUser = await User.findOne({username: pattern});
     if (foundUser) {
-        if (await argon2.verify(foundUser.password, req.body.password)) {
+        if (req.body.password && await argon2.verify(foundUser.password, req.body.password)) {
             console.log(foundUser);
             console.log(foundUser.sessionId);
             res.append(`Set-Cookie`, `session-id=${foundUser.sessionId}; HttpOnly`);

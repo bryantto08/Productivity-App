@@ -52,7 +52,6 @@ export default function NoteTab({ data }) {
     }
     const handleDeleteNote = async () => {
         const res = await deleteNote(data['username'], {'note-id': selectedNote['_id']});
-        console.log(res);
         setNotes(prevNotes => {
             prevNotes = prevNotes.filter((note) => note['_id'] != selectedNote['_id'])
             return prevNotes;

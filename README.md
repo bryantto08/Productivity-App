@@ -91,7 +91,12 @@ An Example Note Document:
 * (1-2 point) External API (OpenAI's API)
     * Want to use OpenAI's AI Model to serve as a supplementary tool for note taking for my web app.
 
-## [Link to Initial Main Project File](app.mjs) 
+## Milestone #2 Form Proof
+Before:
+![list](documentation/before-api.png)
+
+After:
+![list](documentation/after-api.png)
 
 ## Annotations / References Used
 
