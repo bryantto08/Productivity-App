@@ -5,12 +5,13 @@ import mongoose from 'mongoose';
 import { fileURLToPath } from 'url';
 import './db.mjs'
 import session from 'express-session';
-
+import cors from 'cors';
 const app = express();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
+app.use(cors({origin: '*'}));
 
 // retrieve the constructor associated with User
 const User = mongoose.model('User');
@@ -19,13 +20,12 @@ var ObjectId = mongoose.Types.ObjectId;
 
 // Session Middleware for Authentication of an account, the only API endpoints we do not check for authentication is the login and register endpoint
 const checkUser = async (req, res, next) => {
-    if (req.path === "/login" || req.path === "/register") {
+    if (req.path === "/login" || req.path === "/register" || req.path === "/session") {
         next();
     }
     else {
         const sessionId = req.get('session-id');
         const path = req.path.split('/');
-        console.log(path.length);
         let pattern;
         if (path.length === 4) {
             pattern = new RegExp(`^${path[path.length - 2]}$`, 'i');
@@ -38,12 +38,12 @@ const checkUser = async (req, res, next) => {
             next();
         }
         else {
-            res.json({'error': 'Not Authenticated User'});
+            res.status(401).json({'error': 'Not Authenticated User'});
         }
     }
 
 }
-app.use(checkUser);
+// app.use(checkUser);
 
 // GET API endpoint for Retrieving a List of Notes by a User
 app.get("/notes/:username", async (req, res) => {
@@ -51,18 +51,20 @@ app.get("/notes/:username", async (req, res) => {
     const foundUser = await User.findOne({username: pattern});
     if (foundUser) {
         try {
-            console.log(foundUser.notes);
             const promises = foundUser.notes.map(async (id) => {
                 const note = Note.findById(new ObjectId(id));
                 return note;
             })
             const notesList = await Promise.all(promises);
-            res.json({notes: notesList});
+            res.status(200).json({notes: notesList});
         }
         catch(e) {
             console.log(e);
-            res.json({error: e});
+            res.status.apply(500).json({error: e});
         }
+    }
+    else {
+        res.status(404).json({error: 'User not Found'});
     }
 });
 
@@ -74,21 +76,18 @@ app.get("/notes/:username/:note", async (req, res) => {
         try{
             const note = await Note.findById(req.params.note);
             console.log(note);
-            res.json({success: 'true', data: note})
+            res.status(200).json({success: 'true', data: note})
         }
         catch(e) {
             console.log(e);
-            res.json({error: e})
+            res.status(500).json({error: e})
         }
     }
 });
 
 // POST API endpoint for Adding a Note to the Database for a User
 app.post("/notes/:username", async (req, res) => {
-    // CONFIRM USER IS AUTHENTICATED, session data
-
     // Implementation for getting the notes of a user
-    console.log(req.params.username);
     const pattern = new RegExp(`^${req.params.username}$`, 'i');
     const foundUser = await User.findOne({username: pattern});
     if (foundUser) {
@@ -97,44 +96,44 @@ app.post("/notes/:username", async (req, res) => {
                 name: req.body.name || 'Untitled Note',
                 createdAt: Date.now(),
                 updatedAt: Date.now(),
-                text: req.body.text
+                text: req.body.text || ''
             });
             await newNote.save();
             const updateDoc = {$push: {notes: newNote}}
             const result = await User.findOneAndUpdate({username: req.params.username}, updateDoc);
-            res.json({success: 'true'});
+            res.status(200).json({success: 'true', data: newNote});
         }
         catch(e){
             console.log(e);
-            res.json({error: e})
+            res.status(500).json({error: e})
         }
     }
     else {
-        res.json({error: "no user found"});
+        res.status(404).json({error: "no user found"});
     }
 });
 
 // PATCH API Endpoint to Update a Note for a User
 app.patch('/notes/:username', async (req, res) => {
-    // CONFIRM USER IS AUTHENTICATED, session data
-    console.log('hello');
+    console.log(req.body);
     const pattern = new RegExp(`^${req.params.username}$`, 'i');
     const foundUser = await User.findOne({username: pattern});
     if (foundUser) {
         try {
             const note = await Note.findById(new ObjectId(req.body['note-id']));
+            note.name = req.body.name;
             note.text = req.body.text;
             note.updatedAt = Date.now();
             await note.save();
-            res.json({'success': 'true'});
+            res.status(200).json({'success': 'true', data: note});
         }
         catch(e) {
             console.log(e);
-            res.json({'error': e});
+            res.status(500).json({'error': e});
         }
     }
     else {
-        res.json({'error': 'user not found'});
+        res.status(404).json({'error': 'user not found'});
     }
 });
 
@@ -149,14 +148,33 @@ app.delete('/notes/:username', async (req, res) => {
             const newUser = await User.findOneAndUpdate({username: foundUser.username}, {$pull: {notes: note.id}}, {new: true});
             await Note.findByIdAndRemove(note.id);
             console.log(newUser);
-            res.json({success: 'true'});
+            res.status(200).json({success: 'true'});
         }
         else {
-            res.json({'error': 'note not found in database'});
+            res.status(404).json({'error': 'note not found in database'});
         }
     }
     else {
-        res.json({'error': 'user not found'});
+        res.status(404).json({'error': 'user not found'});
+    }
+});
+
+app.post('/session', async(req, res) => {
+    console.log(req.body.username)
+    const pattern = new RegExp(`^${req.body.username}$`, 'i');
+    console.log(pattern);
+    const foundUser = await User.findOne({username: pattern});
+    const sessionId = req.get('session-id');
+    if (foundUser) {
+        if (foundUser.sessionId == sessionId) {
+            res.status(200).json({success: 'true'});
+        }
+        else {
+            res.status(401).json({error: "Unauthorized User"});
+        }
+    }
+    else {
+        res.status(400).json({error: 'Invalid Username'});
     }
 });
 
@@ -169,14 +187,14 @@ app.post('/login', async(req, res) => {
             console.log(foundUser);
             console.log(foundUser.sessionId);
             res.append(`Set-Cookie`, `session-id=${foundUser.sessionId}; HttpOnly`);
-            res.json({success: 'true'});
+            res.status(200).json({success: 'true'});
         }
         else {
-            res.json({error: 'Invalid Password'});
+            res.status(400).json({error: 'Invalid Password'});
         }
     }
     else {
-        res.json({error: 'Invalid Username'});
+        res.status(400).json({error: 'Invalid Username'});
     }
 });
 
@@ -185,7 +203,7 @@ app.post('/register', async (req, res) => {
     const pattern = new RegExp(`^${req.body.username}$`, 'i')
     const foundUser = await User.findOne({username: pattern})
     if (foundUser) {
-        res.json({error: "username already exists"});
+        res.status(400).json({error: "username already exists"});
     }
     else {
         try {
@@ -195,14 +213,14 @@ app.post('/register', async (req, res) => {
             })
             const savedUser = await user.save();
             res.append(`Set-Cookie`, `session-id=${savedUser.sessionId}; HttpOnly`);
-            res.json({success: 'true'});
+            res.status(200).json({success: 'true'});
             
         }
         catch(e) {
             console.log(e);
-            res.json({error: e});
+            res.status(500).json({error: e});
         }
     }
 })
 
-app.listen(process.env.PORT || 3000);
+app.listen(process.env.PORT || 3001);
