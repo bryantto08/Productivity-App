@@ -1,5 +1,5 @@
 const devAuthApi = "http://localhost:3001";
-const prodAuthApi = "http://54.83.141.3";
+const prodAuthApi = "https://54.83.141.3";
 
 
 // API Endpoint for Logging in a User POST /login

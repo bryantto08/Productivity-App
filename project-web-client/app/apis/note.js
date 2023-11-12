@@ -1,6 +1,6 @@
 
 const devNotesApi = "http://localhost:3001/notes";
-const prodNotesApi = "http://54.83.141.3/notes";
+const prodNotesApi = "https://54.83.141.3/notes";
 
 // Given a username, retrieve a NotesList: GET /notes/{username}
 export async function ListNotes(username) {
