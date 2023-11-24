@@ -2,7 +2,7 @@
 
 ## Overview (Capstone Project for my Applied Internet Technology class)
 
-Project can be accessed here: [link](https://master.d2st5pmceso7n9.amplifyapp.com/)
+Project can be accessed [here](https://master.d2st5pmceso7n9.amplifyapp.com/)
 
 Organizing your goals and tasks that you need to complete is an essential part of building a more productive and healthier life. Note.me is a web application that allows you to keep track of any responsibility you need to do as well as containing a platform for effective note-taking. 
 
