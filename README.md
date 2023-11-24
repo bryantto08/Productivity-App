@@ -1,18 +1,22 @@
-# Life+
+# Note.me
 
-## Overview
+## Overview (Capstone Project for my Applied Internet Technology class)
 
-(__TODO__: a brief one or two paragraph, high-level description of your project)
+Project can be accessed here: ![link](https://master.d2st5pmceso7n9.amplifyapp.com/)
 
-Organizing your goals and tasks that you need to complete is an essential part of building a more productive and healthier life. LifePremium is a web application that allows you to keep track of any responsibility you need to do as well as containing a platform for effective note-taking. 
+Organizing your goals and tasks that you need to complete is an essential part of building a more productive and healthier life. Note.me is a web application that allows you to keep track of any responsibility you need to do as well as containing a platform for effective note-taking. 
 
 Users will have two different tabs, one as a To-Do List where users can set daily or weekly goals they want to achieve. These goals can be marked as complete or incomplete and analytics will be provided based on these specific goals.
 
 The second tab will contain a note-taking feature that allows users to take notes both effectively and efficiently through the help of supplementary AI tools.
 
+## Update for implementation
+NOTE: For the final project implementation, I will not implement the to-do list side of the application, this application will only have a login/register feature and a note-taking feature. 
+This should still fulfill the requirements for AJAX interactions and the mongoose schemas with a User Schema and a Notes Schema.
+
 ## Data Model
 
-The application will store Users, Tasks, WeeklyLists, and Notes
+The application will store Users, and Notes
 
 * users can have multiple lists (via references)
 * each list can have multiple items (by embedding)
@@ -23,21 +27,7 @@ An Example User:
 {
   username: "javascriptfannumber1",
   hash: // a password hash,
-  weeklyLists: // an array of references to weeklyLists documents
   notes: // an array of references to note documents
-}
-```
-
-An Example weeklyList with Embedded Tasks:
-
-```javascript
-{
-  user: // a reference to a User object
-  tasks: [
-    { name: "exercise", duration: "30:00", checked: false},
-    { name: "AIT HW", partsCompleted: "4/4", checked: true},
-  ],
-  createdAt: // timestamp
 }
 ```
 An Example Note Document:
@@ -46,6 +36,8 @@ An Example Note Document:
 {
   user: // a reference to a User object
   name: "AIT Notes",
+  postedDate: Date.now() when the note is created
+  updatedDate: Date.now() when the note is updated
   text: "JavaScript is so weird! Firstly, it is a weakly typed language. Also, wat are prototypes??!?!"
 }
 ```
@@ -79,17 +71,18 @@ An Example Note Document:
 2. as a user, I can log in to the site
 3. as a user, I can create a new notes page
 4. as a user, I can write to and make edits to a note page
-5. as a user, I can add tasks to a weeklyList
-6. as a user, I can access my tasks and checkoff completed tasks
+5. as a user, I can delete note pages
+6. as a user, I can access a single note page by clicking on a tab.
 
 ## Research Topics
 
 * (6 points) Next.js
     * Next.js is a frontend framework. Want to use it to develop an interactive UI for the web app.
-* (2 points) Tailwind.css
-    * Tailwind.css is a css framework. Want to use it to develop a consistent css styling scheme throughout my web app.
-* (1-2 point) External API (OpenAI's API)
-    * Want to use OpenAI's AI Model to serve as a supplementary tool for note taking for my web app.
+* (6 points) AWS Deployment
+    * Deploying my application onto two AWS services.
+    * My frontend (Next.js) is deployed onto AWS Amplify, and my backend (Express.js) is deployed onto AWS EC2.
+* (3 points) Docker, Containerization
+    * Used Docker to containerize my application to deploy my frontend onto AWS Amplify. My Docker Container is registered onto AWS ECR (Elastic Container Registry).
 
 ## Milestone #2 Form Proof
 Before:
@@ -100,8 +93,5 @@ After:
 
 ## Annotations / References Used
 
-(__TODO__: list any tutorials/references/etc. that you've based your code off of)
-
-1. [passport.js authentication docs](http://passportjs.org/docs) - (add link to source code that was based on this)
-2. [tutorial on vue.js](https://vuejs.org/v2/guide/) - (add link to source code that was based on this)
-
+1. [tutorial on deploying to ec2](https://www.youtube.com/watch?v=7vf210p2tJg)
+2. [tutorial on https connection from frontend to ec2](https://www.youtube.com/watch?v=q-XEGbipOVw)
